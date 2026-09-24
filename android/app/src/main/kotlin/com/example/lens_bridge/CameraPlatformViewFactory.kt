@@ -10,7 +10,14 @@ class CameraPlatformViewFactory (
     private val lifecycleOwner: LifecycleOwner
 
 ) : PlatformViewFactory(StandardMessageCodec.INSTANCE) {
+
+    var activeView: CameraPlatformView? = null
+        private  set
+
     override fun create(context: Context, viewId: Int, args: Any?): PlatformView {
-        return CameraPlatformView(context, viewId, lifecycleOwner)
+        val view = CameraPlatformView(context, viewId, lifecycleOwner)
+        activeView = view
+        return view
     }
+
 }

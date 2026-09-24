@@ -16,36 +16,50 @@ class CameraPlatformView(
 ) : PlatformView {
 
     private val previewView: PreviewView = PreviewView(context)
+    private var cameraProvider: ProcessCameraProvider? = null
+    private var currentSelector: CameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
+
 
     init {
         startCamera()
     }
 
-    private fun startCamera() {
+    fun startCamera() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
 
         cameraProviderFuture.addListener({
-            val cameraProvider = cameraProviderFuture.get()
-
-            val preview = Preview.Builder().build().also {
-                it.setSurfaceProvider(previewView.surfaceProvider)
-            }
-
-            val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
-
-            cameraProvider.unbindAll()
-
-            cameraProvider.bindToLifecycle(
-                lifecycleOwner,
-                cameraSelector,
-                preview
-            )
+            cameraProvider = cameraProviderFuture.get()
+            bindPreview()
         }, ContextCompat.getMainExecutor(context))
+    }
+
+    fun stopCamera() {
+        cameraProvider?.unbindAll()
+    }
+
+    fun switchLens() {
+        currentSelector = if (currentSelector == CameraSelector.DEFAULT_BACK_CAMERA) {
+            CameraSelector.DEFAULT_FRONT_CAMERA
+        } else {
+            CameraSelector.DEFAULT_BACK_CAMERA
+        }
+        bindPreview()
+    }
+
+    private fun bindPreview() {
+        val provider = cameraProvider ?: return
+
+        val preview = Preview.Builder().build().also {
+            it.setSurfaceProvider(previewView.surfaceProvider)
+        }
+
+        provider.unbindAll()
+        provider.bindToLifecycle(lifecycleOwner, currentSelector, preview)
     }
 
     override fun getView() = previewView
 
     override fun dispose() {
-
+        cameraProvider?.unbindAll()
     }
 }
