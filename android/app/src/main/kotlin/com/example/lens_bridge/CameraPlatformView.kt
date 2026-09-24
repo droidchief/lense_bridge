@@ -1,5 +1,6 @@
 package com.example.lens_bridge
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
@@ -28,7 +29,9 @@ class CameraPlatformView(
     private val lifecycleOwner: LifecycleOwner
 ) : PlatformView {
 
-    private val previewView: PreviewView = PreviewView(context)
+    private val previewView: PreviewView = PreviewView(context).apply {
+        implementationMode = PreviewView.ImplementationMode.COMPATIBLE
+    }
     private val overlayView: OverlayView = OverlayView(context)
     private val container: FrameLayout = FrameLayout(context).apply {
         addView(
@@ -60,6 +63,7 @@ class CameraPlatformView(
         startCamera()
     }
 
+    @SuppressLint("UnsafeOptInUsageError")
     fun startCamera() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
         cameraProviderFuture.addListener({
