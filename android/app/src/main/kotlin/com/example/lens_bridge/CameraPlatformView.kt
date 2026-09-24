@@ -30,7 +30,6 @@ class CameraPlatformView(
         cameraProviderFuture.addListener({
             cameraProvider = cameraProviderFuture.get()
             bindPreview()
-            previewView.visibility = android.view.View.VISIBLE
         }, ContextCompat.getMainExecutor(context))
     }
 
@@ -57,6 +56,7 @@ class CameraPlatformView(
 
         provider.unbindAll()
         provider.bindToLifecycle(lifecycleOwner, currentSelector, preview)
+        previewView.visibility = android.view.View.VISIBLE
     }
 
     override fun getView() = previewView
