@@ -30,11 +30,13 @@ class CameraPlatformView(
         cameraProviderFuture.addListener({
             cameraProvider = cameraProviderFuture.get()
             bindPreview()
+            previewView.visibility = android.view.View.VISIBLE
         }, ContextCompat.getMainExecutor(context))
     }
 
     fun stopCamera() {
         cameraProvider?.unbindAll()
+        previewView.visibility = android.view.View.INVISIBLE
     }
 
     fun switchLens() {
